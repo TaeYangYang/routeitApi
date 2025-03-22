@@ -1,0 +1,30 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: routeitApi
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:kakao #in-memory
+    #url: jdbc:h2:./h2-database #local
+    username: kakao
+    password:
+
+springdoc:
+  api-docs:
+    path: /api-docs # default : /v3/api-docs
+    enabled: true
+  default-consumes-media-type: application/json # request media type
+  default-produces-media-type: application/json # response media type
+  swagger-ui:
+    path: /
+    tags-sorter: alpha
+    operations-sorter: alpha
+    disable-swagger-default-url: true # swagger-ui default url 비활성화 (pet, store..)
+  packages-to-scan: com.routeit.routeitapi.application
+  paths-to-match: /**/controller
+
+
+
+
