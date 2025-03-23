@@ -10,6 +10,13 @@ spring:
     #url: jdbc:h2:./h2-database #local
     username: kakao
     password:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 springdoc:
   api-docs:
@@ -23,8 +30,10 @@ springdoc:
     operations-sorter: alpha
     disable-swagger-default-url: true # swagger-ui default url 비활성화 (pet, store..)
   packages-to-scan: com.routeit.routeitapi.application
-  paths-to-match: /**/controller
+  #paths-to-match: /**/controller
 
+jwt:
+  secret: cm91dGVpdGp3dGtleXRhZXlhbmc=cm91dGVpdGp3dGtleXRhZXlhbmc=
 
 
 
