@@ -4,12 +4,36 @@ server:
 spring:
   application:
     name: routeitApi
+  h2:
+    console: # h2 console
+      enabled: true
+      path: /h2-console # h2 console path
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:kakao #in-memory
+    url: jdbc:h2:mem:routeit #in-memory
     #url: jdbc:h2:./h2-database #local
-    username: kakao
+    username: routeit
     password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create # drop table if exists
+      #ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate:
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: true # 쿼리 로그
+        format_sql: true # 쿼리 로그 포맷팅
+        highlight_sql: true # 쿼리 로그 예약어들 하이라이팅
+    defer-datasource-initialization: true # script 파일이 hibernate 초기화 이후 동작
+#  sql:
+#    init:
+#      data-locations: classpath:sql/initData.sql # init data file path
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -17,6 +41,10 @@ spring:
     redis:
       host: localhost
       port: 6379
+  messages:
+    basename: message/messages
+    encoding: UTF-8
+    fallback-to-system-locale: true # 요청받은 Locale에 대한 파일을 찾지 못할 경우 시스템 설정 Locale을 사용
 
 springdoc:
   api-docs:
@@ -35,5 +63,11 @@ springdoc:
 jwt:
   secret: cm91dGVpdGp3dGtleXRhZXlhbmc=cm91dGVpdGp3dGtleXRhZXlhbmc=
 
-
-
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: TRACE
+        SQL: DEBUG
