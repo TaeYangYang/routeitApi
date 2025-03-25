@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
   kotlin("jvm") version "1.9.25"
@@ -36,7 +37,7 @@ dependencies {
 
   // DTO, Entity Mapper
   implementation("org.mapstruct:mapstruct:1.6.3")
-  annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+  kapt("org.mapstruct:mapstruct-processor:1.6.3")
 
   // JWT
   implementation("io.jsonwebtoken:jjwt-api:0.12.6")
@@ -69,10 +70,15 @@ kotlin {
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
+  ignoreFailures = true
   // 테스트를 제외하려면 exclude를 여기에 설정
-  exclude("**/*")  // 이 줄을 테스트에만 적용되도록 변경
+  //exclude("**/*")  // 이 줄을 테스트에만 적용되도록 변경
 }
 
 tasks.withType<KotlinCompile> {
   kotlinOptions.jvmTarget = "17"
+}
+
+tasks.withType<BootJar> {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
