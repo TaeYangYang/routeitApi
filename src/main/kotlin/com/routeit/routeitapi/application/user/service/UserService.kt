@@ -7,7 +7,9 @@ import com.routeit.routeitapi.application.user.entity.User
 import com.routeit.routeitapi.application.user.repository.UserRepository
 import com.routeit.routeitapi.config.jwt.JwtTokenProvider
 import com.routeit.routeitapi.exception.BaseRuntimeException
-import com.routeit.routeitapi.util.GenericMapper
+import com.routeit.routeitapi.application.base.mapper.GenericMapper
+import com.routeit.routeitapi.application.user.entity.UserRole
+import com.routeit.routeitapi.application.user.mapper.UserMapper
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -19,7 +21,8 @@ class UserService(
   private val messageSourceAccessor: MessageSourceAccessor,
   private val jwtTokenProvider: JwtTokenProvider,
   private val userRepository: UserRepository,
-  private val tokenService: TokenService
+  private val tokenService: TokenService,
+  private val userMapper: UserMapper
 ) {
 
   /**
@@ -40,7 +43,7 @@ class UserService(
     // AccessToken 생성
     val claims: HashMap<String, Any> = HashMap();
     claims.set("email", user.email)
-    claims.set("role", user.userRole)
+    claims.set("role", user.userRole ?: UserRole.USER)
     val accessToken: String = jwtTokenProvider.generateAccessToken(user.email, claims)
 
     // 기존에 부여된 RefreshToken 제거 후 재발급
@@ -60,7 +63,7 @@ class UserService(
   }
 
   fun signUp(userDto: UserDto): User {
-    val user: User = GenericMapper.INSTANCE.toEntity(userDto)
+    val user: User = userMapper.toEntity(userDto)
     return userRepository.save(user)
   }
 

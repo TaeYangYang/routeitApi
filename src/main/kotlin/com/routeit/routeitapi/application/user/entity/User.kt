@@ -15,10 +15,10 @@ class User(
   email: String,
   password: String,
   name: String,
-  nickname: String,
+  nickname: String?,
   ageRange: Int,
   gender: String,
-  userRole: UserRole
+  userRole: UserRole? = UserRole.USER
 ): BaseEntity() {
   @Id
   @Column(length = 100)
@@ -43,7 +43,7 @@ class User(
   @Column(length = 20)
   @Comment("닉네임")
   @Schema(description = "닉네임", example = "루트잇")
-  var nickname: String = nickname
+  var nickname: String? = nickname
     protected set
 
   @Comment("연령대")
@@ -60,7 +60,7 @@ class User(
   @Column(length = 20)
   @Enumerated(EnumType.STRING)
   @Comment("권한")
-  var userRole: UserRole = userRole
+  var userRole: UserRole? = userRole
     protected set
 
 }

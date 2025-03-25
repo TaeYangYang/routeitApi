@@ -47,7 +47,7 @@ class UserApiController(
   @Operation(summary = "회원가입", description = "회원가입 처리 API")
   @Parameters(
     value = [
-      Parameter(name = "UserDto", description = "UserDto")]
+      Parameter(name = "UserDto", description = "UserDto(email, password, name, nickname, ageRange, gender 포함)")]
   )
   @PostMapping("/signup")
   fun signup(@RequestBody userDto: UserDto): User {

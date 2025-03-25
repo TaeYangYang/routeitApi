@@ -8,11 +8,13 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 
 @WebMvcTest(UserApiController::class)
-class UserApiControllerTest @Autowired constructor(
-  private val mockMvc: MockMvc
-){
+class UserApiControllerTest {
+
+  @Autowired
+  private lateinit var mockMvc: MockMvc
+
   @Test
-  fun test(){
+  fun test() {
     mockMvc.post("/api/user/signin")
   }
 }
