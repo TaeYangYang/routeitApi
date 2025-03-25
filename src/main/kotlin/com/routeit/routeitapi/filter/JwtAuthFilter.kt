@@ -2,6 +2,7 @@ package com.routeit.routeitapi.filter
 
 import com.routeit.routeitapi.application.token.service.TokenService
 import com.routeit.routeitapi.application.user.entity.User
+import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.application.user.service.UserService
 import com.routeit.routeitapi.config.jwt.JwtTokenProvider
 import jakarta.servlet.FilterChain
@@ -21,11 +22,14 @@ class JwtAuthFilter(
   private val tokenService: TokenService
 ) : OncePerRequestFilter(){
 
-  val excludedPaths: List<String> = listOf("/api/user/signin", "/api/user/signup", "/api/test")
+  val EXCLUDED_PATHS: Array<String> = arrayOf(
+    "/swagger-ui/**", "/api-docs/**", // swagger
+    "/api/test/**", // test
+    "/api/user/signin", "/api/user/signup" // 로그인, 회원가입
+  )
 
   override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-    val excludedPaths = listOf("/api/user/signin", "/api/user/signup")
-    return excludedPaths.any { request.requestURI.startsWith(it) }
+    return (EXCLUDED_PATHS).any { request.requestURI.startsWith(it) }
   }
 
   /**
@@ -51,7 +55,7 @@ class JwtAuthFilter(
 
     }
 
-
+    filterChain.doFilter(request, response)
   }
 
   /**
@@ -63,6 +67,7 @@ class JwtAuthFilter(
   fun getUserAuth(email: String): UsernamePasswordAuthenticationToken{
     val user: User = userService.findByEmail(email)
 
-    return UsernamePasswordAuthenticationToken(user, user.password, Collections.singleton(SimpleGrantedAuthority(user.userRole.name)))
+    return UsernamePasswordAuthenticationToken(user, user.password, Collections.singleton(SimpleGrantedAuthority(
+      user.userRole?.name ?: UserRole.USER.name)))
   }
 }
