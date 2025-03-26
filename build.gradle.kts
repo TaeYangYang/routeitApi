@@ -32,7 +32,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-logging")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
-  implementation("org.springframework.data:spring-data-redis:3.4.4")
+  implementation("org.springframework.boot:spring-boot-starter-data-redis:3.4.4")
   implementation("io.github.oshai:kotlin-logging:7.0.5")
 
   // DTO, Entity Mapper

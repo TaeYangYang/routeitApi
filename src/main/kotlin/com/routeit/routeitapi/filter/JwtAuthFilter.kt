@@ -42,12 +42,12 @@ class JwtAuthFilter(
   override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
     val accessToken: String = request.getHeader("Authrization")?.substring(7) ?: ""
     val refreshToken: String = request.getHeader("Authrization")?.substring(7) ?: ""
-    val email: String = jwtTokenProvider.getEmailFromToken(accessToken) ?: ""
+    val userId: String = jwtTokenProvider.getUserIdFromToken(accessToken) ?: ""
 
     // AccessToken 유효한 경우
     if(jwtTokenProvider.validateToken(accessToken)){
       if(SecurityContextHolder.getContext().authentication == null){
-        SecurityContextHolder.getContext().authentication = getUserAuth(email) // SecurityContextHolder 내 인증 정보 없다면 저장
+        SecurityContextHolder.getContext().authentication = getUserAuth(userId) // SecurityContextHolder 내 인증 정보 없다면 저장
       }
       filterChain.doFilter(request, response)
       return
@@ -59,13 +59,13 @@ class JwtAuthFilter(
   }
 
   /**
-   * 토큰의 사용자 email을 얻어 정보 조회 후 UsernamePasswordAuthenticationToken 생성
+   * 토큰의 사용자 userId를 얻어 정보 조회 후 UsernamePasswordAuthenticationToken 생성
    *
-   * @param email
+   * @param userId
    * @return
    */
-  fun getUserAuth(email: String): UsernamePasswordAuthenticationToken{
-    val user: User = userService.findByEmail(email)
+  fun getUserAuth(userId: String): UsernamePasswordAuthenticationToken{
+    val user: User = userService.findByUserId(userId)
 
     return UsernamePasswordAuthenticationToken(user, user.password, Collections.singleton(SimpleGrantedAuthority(
       user.userRole?.name ?: UserRole.USER.name)))

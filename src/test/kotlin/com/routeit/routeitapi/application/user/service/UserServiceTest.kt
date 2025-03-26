@@ -24,13 +24,13 @@ class UserServiceTest @Autowired constructor(
   @DisplayName(value = "회원가입 테스트")
   fun signUp() {
     val userDto:UserDto = UserDto(
-    email = "user2@example.com",
-    password = bCryptPasswordEncoder.encode("user2!"),
-    name = "사용자2",
-    nickname = "닉네임2",
-    ageRange = 20,
-    gender = "M",
-    userRole = UserRole.USER
+      userId = "user2@example.com",
+      password = bCryptPasswordEncoder.encode("user2!"),
+      name = "사용자2",
+      nickname = "닉네임2",
+      ageRange = 20,
+      gender = "M",
+      userRole = UserRole.USER
     )
 
     val user: User = userMapper.toEntity(userDto)

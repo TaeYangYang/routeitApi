@@ -32,7 +32,7 @@ class UserService(
    * @return Token
    */
   fun signIn(userDto: UserDto): Token {
-    val user: User = userRepository.findByEmail(userDto.email)
+    val user: User = userRepository.findByUserId(userDto.userId)
       .orElseThrow { BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail")) }
 
     // 패스워드 검증
@@ -42,14 +42,14 @@ class UserService(
 
     // AccessToken 생성
     val claims: HashMap<String, Any> = HashMap();
-    claims.set("email", user.email)
+    claims.set("userId", user.userId)
     claims.set("role", user.userRole ?: UserRole.USER)
-    val accessToken: String = jwtTokenProvider.generateAccessToken(user.email, claims)
+    val accessToken: String = jwtTokenProvider.generateAccessToken(user.userId, claims)
 
     // 기존에 부여된 RefreshToken 제거 후 재발급
-    tokenService.removeUserRefreshToken(user.email)
-    val refreshToken: String = jwtTokenProvider.generateRefreshToken(user.email)
-    tokenService.putRefreshToken(refreshToken, user.email)
+    tokenService.removeUserRefreshToken(user.userId)
+    val refreshToken: String = jwtTokenProvider.generateRefreshToken(user.userId)
+    tokenService.putRefreshToken(refreshToken, user.userId)
 
     return Token(
       accessToken = "Bearer ${accessToken}",
@@ -57,8 +57,8 @@ class UserService(
     )
   }
 
-  fun findByEmail(email: String): User{
-    return userRepository.findByEmail(email)
+  fun findByUserId(userId: String): User{
+    return userRepository.findByUserId(userId)
       .orElseThrow { BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail")) }
   }
 

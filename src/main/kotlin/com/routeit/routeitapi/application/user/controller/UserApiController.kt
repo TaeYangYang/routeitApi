@@ -30,7 +30,7 @@ class UserApiController(
   @Parameters(
     value = [
       Parameter(name = "HttpServletRequest", description = "요청", example = "user1@example.com"),
-      Parameter(name = "userDto", description = "email, password가 포함된 유저 정보", example = "user1!")
+      Parameter(name = "userDto", description = "userId, password가 포함된 유저 정보", example = "user1!")
     ]
   )
   @PostMapping("/signin")
@@ -47,7 +47,7 @@ class UserApiController(
   @Operation(summary = "회원가입", description = "회원가입 처리 API")
   @Parameters(
     value = [
-      Parameter(name = "UserDto", description = "UserDto(email, password, name, nickname, ageRange, gender 포함)")]
+      Parameter(name = "UserDto", description = "UserDto(userId, password, name, nickname, ageRange, gender 포함)")]
   )
   @PostMapping("/signup")
   fun signup(@RequestBody userDto: UserDto): User {

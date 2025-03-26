@@ -1,5 +1,6 @@
 package com.routeit.routeitapi.application.token.service
 
+import com.routeit.routeitapi.application.token.repository.TokenRepositoryRedis
 import com.routeit.routeitapi.exception.BaseRuntimeException
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.http.HttpStatus
@@ -8,10 +9,9 @@ import java.util.*
 
 @Service
 class TokenService(
-  private val messageSourceAccessor: MessageSourceAccessor
+  private val messageSourceAccessor: MessageSourceAccessor,
+  private val tokenRepositoryRedis: TokenRepositoryRedis
 ) {
-
-  private val refreshTokenMap: HashMap<String, String> = HashMap()
 
   /**
    * RefreshToken 으로 정보 획득
@@ -20,7 +20,7 @@ class TokenService(
    * @return id
    */
   fun getRefreshToken(refreshToken: String): String{
-    return Optional.ofNullable(refreshTokenMap.get(refreshToken))
+    return Optional.ofNullable(tokenRepositoryRedis.findByRefreshToken(refreshToken))
       .orElseThrow{BaseRuntimeException(HttpStatus.UNAUTHORIZED, messageSourceAccessor.getMessage("token.null.fail"))}
   }
 
@@ -30,8 +30,8 @@ class TokenService(
    * @param refreshToken
    * @param id
    */
-  fun putRefreshToken(refreshToken: String, id: String) {
-    refreshTokenMap.put(refreshToken, id)
+  fun putRefreshToken(refreshToken: String, userId: String) {
+    tokenRepositoryRedis.save(refreshToken, userId)
   }
 
   /**
@@ -40,7 +40,7 @@ class TokenService(
    * @param refreshToken
    */
   private fun removeRefreshToken(refreshToken: String) {
-    refreshTokenMap.remove(refreshToken)
+    tokenRepositoryRedis.deleteByRefreshToken(refreshToken)
   }
 
   /**
@@ -49,14 +49,6 @@ class TokenService(
    * @param id
    */
   fun removeUserRefreshToken(id: String) {
-    val it: Iterator<Map.Entry<String, String>> =
-      refreshTokenMap.entries.iterator()
-    while (it.hasNext()) {
-      val (key, value) = it.next()
-      if (value == id) {
-        removeRefreshToken(key)
-        break
-      }
-    }
+    tokenRepositoryRedis.deleteByUserId(id)
   }
 }

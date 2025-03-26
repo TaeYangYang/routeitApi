@@ -12,7 +12,7 @@ import org.hibernate.annotations.DynamicUpdate
 @DynamicUpdate
 @Schema(description = "유저")
 class User(
-  email: String,
+  userId: String,
   password: String,
   name: String,
   nickname: String?,
@@ -24,7 +24,7 @@ class User(
   @Column(length = 100)
   @Comment("이메일")
   @Schema(description = "이메일", example = "user1@example.com")
-  var email: String = email
+  var userId: String = userId
     protected set
 
   @Column(length = 100)

@@ -17,7 +17,7 @@ class DataInitializer(
 
   override fun run(args: ApplicationArguments?) {
     var user:User = User(
-      email = "user1@example.com",
+      userId = "user1@example.com",
       password = bCryptPasswordEncoder.encode("user1!"),
       name = "사용자1",
       nickname = "닉네임1",

@@ -9,16 +9,13 @@ import org.springframework.stereotype.Component
 import java.util.*
 import java.util.function.Function
 
+const val ACCESS_TOKEN_EXP_TIME: Long = 1000 * 60 * 60 // 만료시간(ms)
+const val REFRESH_TOKEN_EXP_TIME: Long = 1000 * 60 * 60
 
 @Component
 class JwtTokenProvider {
 
   val logger = KotlinLogging.logger {}
-
-  companion object{
-    const val ACCESS_TOKEN_EXP_TIME: Long = 1000 * 60 * 60 // 만료시간(ms)
-    const val REFRESH_TOKEN_EXP_TIME: Long = 1000 * 60 * 60
-  }
 
   @Value("\${jwt.secret}")
   lateinit var secret: String // jwt secret
@@ -26,12 +23,12 @@ class JwtTokenProvider {
   private val key by lazy { Keys.hmacShaKeyFor(secret.toByteArray()) } // 암호화 키
 
   /**
-   * token에서 email 조회
+   * token에서 userId 조회
    *
    * @param token
-   * @return email
+   * @return userId
    */
-  fun getEmailFromToken(token: String): String?{
+  fun getUserIdFromToken(token: String): String?{
     return getClaimFromToken(token, Claims::getId)
   }
 

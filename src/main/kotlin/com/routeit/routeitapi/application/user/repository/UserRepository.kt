@@ -9,8 +9,8 @@ interface UserRepository : JpaRepository<User, String>{
   /**
    * 유저 정보 조회
    *
-   * @param email
+   * @param userId
    * @return
    */
-  fun findByEmail(email: String): Optional<User>
+  fun findByUserId(userId: String): Optional<User>
 }
