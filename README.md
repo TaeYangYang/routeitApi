@@ -14,12 +14,14 @@
 ### 개발 환경
 - DB
     - H2(Local), MariaDB(Proc)
+    - Redis
 - Server
     - Kotlin 1.9.25(JDK 17)
     - Spring Boot 3.4.4
     - Spring Security 6.4.2
     - Gradle 8.11.1
     - JPA
+    - JWT
     - JUnit
 - 문서
     - Swagger
