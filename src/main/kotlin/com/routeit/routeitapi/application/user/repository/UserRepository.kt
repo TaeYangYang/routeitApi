@@ -12,5 +12,5 @@ interface UserRepository : JpaRepository<User, String>{
    * @param userId
    * @return
    */
-  fun findByUserId(userId: String): Optional<User>
+  fun findByUserId(userId: String): User?
 }

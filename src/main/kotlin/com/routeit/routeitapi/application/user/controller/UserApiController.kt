@@ -1,5 +1,6 @@
 package com.routeit.routeitapi.application.user.controller
 
+import com.routeit.routeitapi.application.base.dto.ResponseDto
 import com.routeit.routeitapi.application.token.dto.Token
 import com.routeit.routeitapi.application.user.dto.UserDto
 import com.routeit.routeitapi.application.user.entity.User
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -52,6 +54,11 @@ class UserApiController(
   @PostMapping("/signup")
   fun signup(@RequestBody userDto: UserDto): User {
     return userService.signUp(userDto)
+  }
+
+  fun signout(): String{
+    val userId = (SecurityContextHolder.getContext().authentication.principal as User).userId
+    return userService.deleteUserRefreshToken(userId!!)
   }
 
 }

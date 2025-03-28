@@ -12,31 +12,31 @@ import org.hibernate.annotations.DynamicUpdate
 @DynamicUpdate
 @Schema(description = "유저")
 class User(
-  userId: String,
-  password: String,
-  name: String,
+  userId: String?,
+  password: String?,
+  name: String?,
   nickname: String?,
-  ageRange: Int,
-  gender: String,
+  ageRange: Int?,
+  gender: String?,
   userRole: UserRole? = UserRole.USER
 ): BaseEntity() {
   @Id
   @Column(length = 100)
   @Comment("이메일")
   @Schema(description = "이메일", example = "user1@example.com")
-  var userId: String = userId
+  var userId: String? = userId
     protected set
 
   @Column(length = 100)
   @Comment("비밀번호")
   @Schema(description = "비밀번호")
-  var password: String = password
+  var password: String? = password
     protected set
 
   @Column(length = 100)
   @Comment("이름")
   @Schema(description = "이름", example = "홍길동")
-  var name: String = name
+  var name: String? = name
     protected set
 
 
@@ -48,13 +48,13 @@ class User(
 
   @Comment("연령대")
   @Schema(description = "연령대", example = "20")
-  var ageRange: Int = ageRange
+  var ageRange: Int? = ageRange
     protected set
 
   @Column(length = 1)
   @Comment("성별")
   @Schema(description = "성별(M, F)", example = "M, F")
-  var gender: String = gender
+  var gender: String? = gender
     protected set
 
   @Column(length = 20)

@@ -32,8 +32,7 @@ class UserService(
    * @return Token
    */
   fun signIn(userDto: UserDto): Token {
-    val user: User = userRepository.findByUserId(userDto.userId)
-      .orElseThrow { BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail")) }
+    val user: User = userRepository.findByUserId(userDto.userId!!) ?: throw BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail"))
 
     // 패스워드 검증
     if(!bCryptPasswordEncoder.matches(userDto.password, user.password)){
@@ -42,14 +41,14 @@ class UserService(
 
     // AccessToken 생성
     val claims: HashMap<String, Any> = HashMap();
-    claims.set("userId", user.userId)
+    claims.set("userId", user.userId!!)
     claims.set("role", user.userRole ?: UserRole.USER)
-    val accessToken: String = jwtTokenProvider.generateAccessToken(user.userId, claims)
+    val accessToken: String = jwtTokenProvider.generateAccessToken(user.userId!!, claims)
 
     // 기존에 부여된 RefreshToken 제거 후 재발급
-    tokenService.removeUserRefreshToken(user.userId)
-    val refreshToken: String = jwtTokenProvider.generateRefreshToken(user.userId)
-    tokenService.putRefreshToken(refreshToken, user.userId)
+    tokenService.removeUserRefreshToken(user.userId!!)
+    val refreshToken: String = jwtTokenProvider.generateRefreshToken(user.userId!!)
+    tokenService.putRefreshToken(refreshToken, user.userId!!)
 
     return Token(
       accessToken = "Bearer ${accessToken}",
@@ -58,13 +57,17 @@ class UserService(
   }
 
   fun findByUserId(userId: String): User{
-    return userRepository.findByUserId(userId)
-      .orElseThrow { BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail")) }
+    return userRepository.findByUserId(userId) ?: throw BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail"))
   }
 
   fun signUp(userDto: UserDto): User {
     val user: User = userMapper.toEntity(userDto)
     return userRepository.save(user)
+  }
+
+  fun deleteUserRefreshToken(userId: String): String {
+    tokenService.removeUserRefreshToken(userId)
+    return messageSourceAccessor.getMessage("user.logout.success")
   }
 
 }
