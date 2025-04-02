@@ -1,5 +1,6 @@
 package com.routeit.routeitapi.config
 
+import com.routeit.routeitapi.config.handler.CustomAuthenticationEntryPointHandler
 import com.routeit.routeitapi.filter.JwtAuthFilter
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -14,12 +15,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-  private val jwtAuthFilter: JwtAuthFilter
+  private val jwtAuthFilter: JwtAuthFilter,
+  private val customAuthenticationEntryPointHandler: CustomAuthenticationEntryPointHandler
 ){
   val EXCLUDED_PATHS: Array<String> = arrayOf(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
-    "/api/user/signin", "/api/user/signup" // 로그인, 회원가입
+    "/api/user/signin", "/api/user/signup", // 로그인, 회원가입
+    "/api/token/valid" // token 검증
   )
 
 
@@ -39,6 +42,9 @@ class SecurityConfig(
       .logout { it.disable() }
 
     http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
+      .exceptionHandling {
+        it.authenticationEntryPoint(customAuthenticationEntryPointHandler)
+      }
 
     return http.build()
   }

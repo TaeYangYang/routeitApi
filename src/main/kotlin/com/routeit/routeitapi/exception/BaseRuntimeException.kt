@@ -3,15 +3,21 @@ package com.routeit.routeitapi.exception
 import org.springframework.http.HttpStatus
 
 
-class BaseRuntimeException : RuntimeException {
-  val code: Int
-  val status: String
-  override val message: String
+open class BaseRuntimeException : RuntimeException {
+  open var code: Int
+  open var status: String
+  override var message: String
 
   constructor() : super() {
     this.code = HttpStatus.INTERNAL_SERVER_ERROR.value()
     this.status = HttpStatus.INTERNAL_SERVER_ERROR.name
     this.message = "UNDEFINED_INTERNAL_SERVER_ERROR"
+  }
+
+  constructor(message: String) : super(message) {
+    this.code = HttpStatus.INTERNAL_SERVER_ERROR.value()
+    this.status = HttpStatus.INTERNAL_SERVER_ERROR.name
+    this.message = message
   }
 
   constructor(httpStatus: HttpStatus, message:String) : super(){

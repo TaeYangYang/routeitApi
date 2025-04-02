@@ -5,9 +5,11 @@ import com.routeit.routeitapi.application.user.entity.User
 import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.application.user.service.UserService
 import com.routeit.routeitapi.config.jwt.JwtTokenProvider
+import com.routeit.routeitapi.exception.InvalidTokenException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -25,7 +27,8 @@ class JwtAuthFilter(
   val EXCLUDED_PATHS: Array<String> = arrayOf(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
-    "/api/user/signin", "/api/user/signup" // 로그인, 회원가입
+    "/api/user/signin", "/api/user/signup", // 로그인, 회원가입
+    "/api/token/valid" // token 검증
   )
 
   override fun shouldNotFilter(request: HttpServletRequest): Boolean {
@@ -51,11 +54,9 @@ class JwtAuthFilter(
       }
       filterChain.doFilter(request, response)
       return
-    } else if(jwtTokenProvider.validateToken(refreshToken)){
-
+    } else{
+      throw InvalidTokenException(HttpStatus.UNAUTHORIZED, "invalid token") // AuthenticationEntryPoint 에서 응답 처리
     }
-
-    filterChain.doFilter(request, response)
   }
 
   /**

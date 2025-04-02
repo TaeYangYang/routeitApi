@@ -2,6 +2,7 @@ package com.routeit.routeitapi.config.jwt
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.*
+import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SecurityException
 import org.springframework.beans.factory.annotation.Value
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 import java.util.function.Function
 
-const val ACCESS_TOKEN_EXP_TIME: Long = 1000 * 60 * 60 // 만료시간(ms)
+const val ACCESS_TOKEN_EXP_TIME: Long = 1000 * 60 // 만료시간(ms)
 const val REFRESH_TOKEN_EXP_TIME: Long = 1000 * 60 * 60
 
 @Component
@@ -20,7 +21,7 @@ class JwtTokenProvider {
   @Value("\${jwt.secret}")
   lateinit var secret: String // jwt secret
 
-  private val key by lazy { Keys.hmacShaKeyFor(secret.toByteArray()) } // 암호화 키
+  private val key by lazy { Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)) } // 암호화 키
 
   /**
    * token에서 userId 조회
@@ -95,7 +96,7 @@ class JwtTokenProvider {
 
     // AccessToken
     return Jwts.builder()
-      .header().add(createHeader()).and()
+      //.header().add(createHeader()).and()
       .id(id)
       .subject(id) // jwt sub
       .claims(claims) // 권한
@@ -133,11 +134,15 @@ class JwtTokenProvider {
    * @return boolean
    */
   fun validateToken(token: String): Boolean{
+    var tokenValue = token
+    if(tokenValue.startsWith("Bearer ")){
+      tokenValue = tokenValue.substring(7)
+    }
     try{
       Jwts.parser()
-        .decryptWith(key)
+        .verifyWith(key)
         .build()
-        .parseSignedClaims(token)
+        .parseSignedClaims(tokenValue)
       return true
     } catch(e: Exception){
       when(e){
@@ -155,7 +160,7 @@ class JwtTokenProvider {
   fun createHeader(): MutableMap<String, Any> {
     val header: MutableMap<String, Any> = HashMap()
     header["typ"] = "JWT"
-    header["alg"] = "HS256"
+    //header["alg"] = "HS256"
     return header
   }
 

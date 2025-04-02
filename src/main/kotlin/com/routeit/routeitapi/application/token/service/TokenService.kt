@@ -1,6 +1,7 @@
 package com.routeit.routeitapi.application.token.service
 
 import com.routeit.routeitapi.application.token.repository.TokenRepositoryRedis
+import com.routeit.routeitapi.config.jwt.JwtTokenProvider
 import com.routeit.routeitapi.exception.BaseRuntimeException
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.http.HttpStatus
@@ -10,7 +11,8 @@ import java.util.*
 @Service
 class TokenService(
   private val messageSourceAccessor: MessageSourceAccessor,
-  private val tokenRepositoryRedis: TokenRepositoryRedis
+  private val tokenRepositoryRedis: TokenRepositoryRedis,
+  private val jwtTokenProvider: JwtTokenProvider
 ) {
 
   /**
@@ -50,5 +52,15 @@ class TokenService(
    */
   fun removeUserRefreshToken(id: String) {
     tokenRepositoryRedis.deleteByUserId(id)
+  }
+
+  /**
+   * 토큰 유효성 검증
+   *
+   * @param token
+   * @return valid or invalid
+   */
+  fun validToken(token: String): Boolean{
+    return jwtTokenProvider.validateToken(token)
   }
 }
