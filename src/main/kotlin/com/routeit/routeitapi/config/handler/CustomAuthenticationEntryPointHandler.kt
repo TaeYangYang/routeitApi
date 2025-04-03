@@ -1,25 +1,20 @@
 package com.routeit.routeitapi.config.handler
 
-import com.routeit.routeitapi.application.base.dto.ResponseDto
 import com.routeit.routeitapi.exception.InvalidTokenException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.json.simple.JSONObject
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
-import org.springframework.web.servlet.HandlerExceptionResolver
 
 /**
  * 인증되지 않거나 유효하지 않은 인증 정보를 가지고 있는 경우 처리
  */
 @Component
-class CustomAuthenticationEntryPointHandler(
-  @Qualifier("handlerExceptionResolver") private val handlerExceptionResolver: HandlerExceptionResolver
-): AuthenticationEntryPoint {
+class CustomAuthenticationEntryPointHandler: AuthenticationEntryPoint {
 
 
   override fun commence(
@@ -42,8 +37,6 @@ class CustomAuthenticationEntryPointHandler(
     responseJson.put("status", e.status)
     responseJson.put("message", e.message)
 
-
     response.writer.print(responseJson)
-
   }
 }

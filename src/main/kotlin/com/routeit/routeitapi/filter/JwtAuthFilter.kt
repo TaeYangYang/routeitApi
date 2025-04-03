@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 import java.util.*
 
@@ -23,6 +24,8 @@ class JwtAuthFilter(
   private val userService: UserService
 ) : OncePerRequestFilter(){
 
+  private val antPathMatcher = AntPathMatcher()
+
   val EXCLUDED_PATHS: Array<String> = arrayOf(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
@@ -31,7 +34,8 @@ class JwtAuthFilter(
   )
 
   override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-    return (EXCLUDED_PATHS).any { request.requestURI.startsWith(it) }
+    return EXCLUDED_PATHS.any { antPathMatcher.match(it, request.requestURI) }
+
   }
 
   /**
@@ -45,19 +49,20 @@ class JwtAuthFilter(
     val accessToken: String = request.getHeader("Authrization")?.substring(7) ?: ""
     val userId: String = jwtTokenProvider.getUserIdFromToken(accessToken) ?: ""
 
-    // AccessToken 검증
-    if(accessToken.isNotBlank() && jwtTokenProvider.validateToken(accessToken)){
-      if(SecurityContextHolder.getContext().authentication == null){
-        SecurityContextHolder.getContext().authentication = getUserAuth(userId) // SecurityContextHolder 내 인증 정보 없다면 저장
+    try{
+      // AccessToken 검증
+      if(accessToken.isNotBlank() && jwtTokenProvider.validateToken(accessToken)){
+        if(SecurityContextHolder.getContext().authentication == null){
+          SecurityContextHolder.getContext().authentication = getUserAuth(userId) // SecurityContextHolder 내 인증 정보 없다면 저장
+        }
+        filterChain.doFilter(request, response)
+        return
+      } else{
+        throw InvalidTokenException(HttpStatus.UNAUTHORIZED, "invalid token") // AuthenticationEntryPoint 에서 응답 처리
       }
-      filterChain.doFilter(request, response)
-      return
-    } else{
-      val e = InvalidTokenException(HttpStatus.UNAUTHORIZED, "invalid token")
+    } catch(e: InvalidTokenException){
       request.setAttribute("exception", e)
-      throw e // AuthenticationEntryPoint 에서 응답 처리
     }
-
   }
 
   /**
