@@ -1,13 +1,12 @@
 package com.routeit.routeitapi.application.user.service
 
-import com.routeit.routeitapi.application.token.dto.Token
+import com.routeit.routeitapi.application.token.dto.TokenDto
 import com.routeit.routeitapi.application.token.service.TokenService
 import com.routeit.routeitapi.application.user.dto.UserDto
 import com.routeit.routeitapi.application.user.entity.User
 import com.routeit.routeitapi.application.user.repository.UserRepository
 import com.routeit.routeitapi.config.jwt.JwtTokenProvider
 import com.routeit.routeitapi.exception.BaseRuntimeException
-import com.routeit.routeitapi.application.base.mapper.GenericMapper
 import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.application.user.mapper.UserMapper
 import org.springframework.context.support.MessageSourceAccessor
@@ -31,7 +30,7 @@ class UserService(
    * @param userDto
    * @return Token
    */
-  fun signIn(userDto: UserDto): Token {
+  fun signIn(userDto: UserDto): TokenDto {
     val user: User = userRepository.findByUserId(userDto.userId!!) ?: throw BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail"))
 
     // 패스워드 검증
@@ -39,30 +38,17 @@ class UserService(
       throw BaseRuntimeException()
     }
 
-    // AccessToken 생성
-    val claims: HashMap<String, Any> = HashMap();
-    claims.set("userId", user.userId!!)
-    claims.set("role", user.userRole ?: UserRole.USER)
-    val accessToken: String = jwtTokenProvider.generateAccessToken(user.userId!!, claims)
-
-    // 기존에 부여된 RefreshToken 제거 후 재발급
-    tokenService.removeUserRefreshToken(user.userId!!)
-    val refreshToken: String = jwtTokenProvider.generateRefreshToken(user.userId!!)
-    tokenService.putRefreshToken(refreshToken, user.userId!!)
-
-    return Token(
-      accessToken = "Bearer ${accessToken}",
-      refreshToken = "Bearer ${refreshToken}"
-    )
+    return tokenService.generateAllToken(user.userId!!, user.userRole!!)
   }
 
   fun findByUserId(userId: String): User{
     return userRepository.findByUserId(userId) ?: throw BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail"))
   }
 
-  fun signUp(userDto: UserDto): User {
+  fun signUp(userDto: UserDto): String {
     val user: User = userMapper.toEntity(userDto)
-    return userRepository.save(user)
+    userRepository.save(user)
+    return "success"
   }
 
   fun deleteUserRefreshToken(userId: String): String {

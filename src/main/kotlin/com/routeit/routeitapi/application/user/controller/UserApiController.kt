@@ -1,7 +1,6 @@
 package com.routeit.routeitapi.application.user.controller
 
-import com.routeit.routeitapi.application.base.dto.ResponseDto
-import com.routeit.routeitapi.application.token.dto.Token
+import com.routeit.routeitapi.application.token.dto.TokenDto
 import com.routeit.routeitapi.application.user.dto.UserDto
 import com.routeit.routeitapi.application.user.entity.User
 import com.routeit.routeitapi.application.user.service.UserService
@@ -10,10 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @Tag(name = "유저 API", description = "유저 정보 처리 API")
 @RestController
@@ -36,7 +32,7 @@ class UserApiController(
     ]
   )
   @PostMapping("/signin")
-  fun signin(@RequestBody userDto: UserDto): Token {
+  fun signin(@RequestBody userDto: UserDto): TokenDto {
     return userService.signIn(userDto)
   }
 
@@ -52,13 +48,24 @@ class UserApiController(
       Parameter(name = "UserDto", description = "UserDto(userId, password, name, nickname, ageRange, gender 포함)")]
   )
   @PostMapping("/signup")
-  fun signup(@RequestBody userDto: UserDto): User {
+  fun signup(@RequestBody userDto: UserDto): String {
     return userService.signUp(userDto)
   }
 
+  /**
+   * 로그아웃
+   *
+   * @return
+   */
+  @Operation(summary = "로그아웃", description = "로그아웃 처리 API")
   fun signout(): String{
     val userId = (SecurityContextHolder.getContext().authentication.principal as User).userId
     return userService.deleteUserRefreshToken(userId!!)
+  }
+
+  @GetMapping("/{userId}")
+  fun getUser(@PathVariable userId: String): UserDto {
+    return UserDto("", "","","",0,"")
   }
 
 }

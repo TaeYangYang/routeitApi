@@ -1,8 +1,10 @@
 package com.routeit.routeitapi.config.handler
 
 import com.routeit.routeitapi.application.base.dto.ResponseDto
+import com.routeit.routeitapi.exception.InvalidTokenException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.json.simple.JSONObject
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -29,19 +31,19 @@ class CustomAuthenticationEntryPointHandler(
       return
     }
 
+    val e = request?.getAttribute("exception") as InvalidTokenException
+
     response.characterEncoding = "UTF-8"
     response.contentType = MediaType.APPLICATION_JSON_VALUE
     response.status = HttpStatus.UNAUTHORIZED.value()
-//
-//    val responseJson: JSONObject = JSONObject()
-//    responseJson.put("message", exceptionCode.getMessage())
-//    responseJson.put("code", exceptionCode.getCode())
-//
-//    response.writer.print(responseJson)
-//
-//    return objectMapper.writeValueAsString(ResponseDto(HttpStatus.OK.value(), "SUCCESS", HttpStatus.OK.reasonPhrase, body))
+
+    val responseJson: JSONObject = JSONObject()
+    responseJson.put("code", e.code)
+    responseJson.put("status", e.status)
+    responseJson.put("message", e.message)
 
 
+    response.writer.print(responseJson)
 
   }
 }

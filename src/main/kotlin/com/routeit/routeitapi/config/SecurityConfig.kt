@@ -22,7 +22,7 @@ class SecurityConfig(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
     "/api/user/signin", "/api/user/signup", // 로그인, 회원가입
-    "/api/token/valid" // token 검증
+    "/api/token/valid", "/api/token/refresh" // token 검증, 재발급
   )
 
 

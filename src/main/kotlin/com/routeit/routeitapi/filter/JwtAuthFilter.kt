@@ -20,15 +20,14 @@ import java.util.*
 @Component
 class JwtAuthFilter(
   private val jwtTokenProvider: JwtTokenProvider,
-  private val userService: UserService,
-  private val tokenService: TokenService
+  private val userService: UserService
 ) : OncePerRequestFilter(){
 
   val EXCLUDED_PATHS: Array<String> = arrayOf(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
     "/api/user/signin", "/api/user/signup", // 로그인, 회원가입
-    "/api/token/valid" // token 검증
+    "/api/token/valid", "/api/token/refresh" // token 검증, 재발급
   )
 
   override fun shouldNotFilter(request: HttpServletRequest): Boolean {
@@ -44,19 +43,21 @@ class JwtAuthFilter(
    */
   override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
     val accessToken: String = request.getHeader("Authrization")?.substring(7) ?: ""
-    val refreshToken: String = request.getHeader("Authrization")?.substring(7) ?: ""
     val userId: String = jwtTokenProvider.getUserIdFromToken(accessToken) ?: ""
 
-    // AccessToken 유효한 경우
-    if(jwtTokenProvider.validateToken(accessToken)){
+    // AccessToken 검증
+    if(accessToken.isNotBlank() && jwtTokenProvider.validateToken(accessToken)){
       if(SecurityContextHolder.getContext().authentication == null){
         SecurityContextHolder.getContext().authentication = getUserAuth(userId) // SecurityContextHolder 내 인증 정보 없다면 저장
       }
       filterChain.doFilter(request, response)
       return
     } else{
-      throw InvalidTokenException(HttpStatus.UNAUTHORIZED, "invalid token") // AuthenticationEntryPoint 에서 응답 처리
+      val e = InvalidTokenException(HttpStatus.UNAUTHORIZED, "invalid token")
+      request.setAttribute("exception", e)
+      throw e // AuthenticationEntryPoint 에서 응답 처리
     }
+
   }
 
   /**

@@ -12,7 +12,7 @@ import java.util.function.Function
 
 const val ACCESS_TOKEN_EXP_TIME: Long = 1000 * 60 // 만료시간(ms)
 const val REFRESH_TOKEN_EXP_TIME: Long = 1000 * 60 * 60
-
+const val TOKEN_PREFIX: String = "Bearer"
 @Component
 class JwtTokenProvider {
 
@@ -135,7 +135,7 @@ class JwtTokenProvider {
    */
   fun validateToken(token: String): Boolean{
     var tokenValue = token
-    if(tokenValue.startsWith("Bearer ")){
+    if(tokenValue.startsWith("$TOKEN_PREFIX ")){
       tokenValue = tokenValue.substring(7)
     }
     try{
