@@ -23,7 +23,8 @@ class DataInitializer(
       nickname = "닉네임1",
       ageRange = 20,
       gender = "M",
-      userRole = UserRole.USER
+      userRole = UserRole.USER,
+      mobileNumber = "010-1234-5678"
     )
 
     userRepository.save(user)

@@ -18,7 +18,8 @@ class User(
   nickname: String?,
   ageRange: Int?,
   gender: String?,
-  userRole: UserRole? = UserRole.USER
+  userRole: UserRole? = UserRole.USER,
+  mobileNumber: String?
 ): BaseEntity() {
   @Id
   @Column(length = 100)
@@ -63,4 +64,8 @@ class User(
   var userRole: UserRole? = userRole
     protected set
 
+  @Column(length = 20)
+  @Comment("휴대전화")
+  @Schema(description = "휴대전화", example = "010-1234-5678")
+  var mobileNumber: String? = mobileNumber
 }

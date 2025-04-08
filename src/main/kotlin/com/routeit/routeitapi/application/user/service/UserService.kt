@@ -56,4 +56,8 @@ class UserService(
     return messageSourceAccessor.getMessage("user.logout.success")
   }
 
+  fun checkDuplicate(userId: String): Boolean{
+    return userRepository.findByUserId(userId) != null
+  }
+
 }

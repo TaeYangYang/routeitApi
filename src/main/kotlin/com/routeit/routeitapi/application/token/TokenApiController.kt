@@ -30,7 +30,7 @@ class TokenApiController(
     value = [
       Parameter(name = "token", description = "token값")]
   )
-  @PostMapping("/valid")
+  @PostMapping("/public/valid")
   fun validToken(@RequestBody body: Map<String, String>): Boolean {
     val token = body["token"] ?: throw BaseRuntimeException(messageSourceAccessor.getMessage("token.null.fail"))
     return tokenService.validToken(token)
@@ -47,7 +47,7 @@ class TokenApiController(
     value = [
       Parameter(name = "tokenDto", description = "accessToken, refreshToken, userId")]
   )
-  @PostMapping("/refresh")
+  @PostMapping("/public/refresh")
   fun refresh(@RequestBody tokenDto: TokenDto): TokenDto {
     return tokenService.refreshToken(tokenDto)
   }

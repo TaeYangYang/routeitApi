@@ -9,5 +9,6 @@ data class UserDto(
   val nickname: String? = "",
   val ageRange: Int?,
   val gender: String? = "",
-  val userRole: UserRole? = UserRole.USER
+  val userRole: UserRole? = UserRole.USER,
+  val mobileNumber: String = ""
 )
