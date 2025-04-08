@@ -29,8 +29,7 @@ class JwtAuthFilter(
   val EXCLUDED_PATHS: Array<String> = arrayOf(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
-    "/api/user/signin", "/api/user/signup", // 로그인, 회원가입
-    "/api/token/valid", "/api/token/refresh" // token 검증, 재발급
+    "/**/public/**" // 체크 안하는 경로
   )
 
   override fun shouldNotFilter(request: HttpServletRequest): Boolean {
