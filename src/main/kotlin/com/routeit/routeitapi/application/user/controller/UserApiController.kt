@@ -5,6 +5,7 @@ import com.routeit.routeitapi.application.token.dto.TokenDto
 import com.routeit.routeitapi.application.user.dto.UserDto
 import com.routeit.routeitapi.application.user.entity.User
 import com.routeit.routeitapi.application.user.service.UserService
+import com.routeit.routeitapi.exception.BaseRuntimeException
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.Parameters
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
@@ -20,7 +22,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/user")
 class UserApiController(
-  private val userService: UserService
+  private val userService: UserService,
+  private val messageSourceAccessor: MessageSourceAccessor
 ) {
 
   /**
@@ -98,9 +101,36 @@ class UserApiController(
       ApiResponse(responseCode = "200", description = "true : 중복 사용자 존재, false : 중복 사용자 미존재")
     ]
   )
-  @GetMapping("/public/check-duplicate")
-  fun checkDuplicate(@RequestParam userId: String): Boolean {
+  @PostMapping("/public/check-duplicate")
+  fun checkDuplicate(@RequestBody userDto: UserDto): Boolean {
+    val userId = userDto.userId ?: throw BaseRuntimeException(messageSourceAccessor.getMessage("common.error.invalidReq"))
     return userService.checkDuplicate(userId)
+  }
+
+  /**
+   * 연락처 인증번호 발송
+   * @param userDto
+   */
+  @Operation(summary = "연락처 인증번호 발송", description = "연락처 인증번호 발송 API, 개발환경은 \"000000\" ")
+  @Parameters(
+    value = [
+      Parameter(name = "mobileNumber", description = "연락처", example = "010-1234-5678")]
+  )
+  @PostMapping("/public/mobile-verification-code")
+  fun mobileVerificationCode(@RequestBody userDto: UserDto): Unit{
+    val mobileNumber = userDto.mobileNumber ?: throw BaseRuntimeException(messageSourceAccessor.getMessage("common.error.invalidReq"))
+    userService.validMobile(mobileNumber)
+  }
+
+  /**
+   * 연락처 인증번호 일치여부
+   *
+   * @param body
+   * @return
+   */
+  fun checkVerificationCode(@RequestBody body: Map<String, String>): Boolean {
+    //TODO 연락처 인증번호 일치여부 구현 필요
+    return true
   }
 
 }

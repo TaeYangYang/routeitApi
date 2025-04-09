@@ -1,5 +1,6 @@
 package com.routeit.routeitapi.application.token.repository
 
+import com.routeit.routeitapi.application.base.repository.BaseRepositoryRedis
 import com.routeit.routeitapi.application.user.dto.UserDto
 import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.config.jwt.REFRESH_TOKEN_EXP_TIME
@@ -14,8 +15,9 @@ import java.util.concurrent.TimeUnit
  */
 @Repository
 class TokenRepositoryRedis(
-  private val redisTemplate: RedisTemplate<String, String>
-) {
+  override val redisTemplate: RedisTemplate<String, String>
+): BaseRepositoryRedis(redisTemplate) {
+
   companion object{
     private const val KEY_PREFIX = "refreshToken" // refreshToken:{userId}:{refreshToken}
   }
@@ -28,7 +30,7 @@ class TokenRepositoryRedis(
    */
   fun save(refreshToken: String, userId: String, userRole: UserRole){
     val key = "$KEY_PREFIX:$userId:$refreshToken"
-    redisTemplate.opsForValue().set(key, userRole.name, REFRESH_TOKEN_EXP_TIME, TimeUnit.MILLISECONDS)
+    super.save(key, userRole.name, REFRESH_TOKEN_EXP_TIME, TimeUnit.MILLISECONDS)
   }
 
   /**
@@ -38,8 +40,7 @@ class TokenRepositoryRedis(
    * @return
    */
   fun findByRefreshToken(refreshToken: String): String?{
-    val key = redisTemplate.keys("$KEY_PREFIX:*:$refreshToken").firstOrNull()
-    return key?.let{redisTemplate.opsForValue().get(it)}
+    return super.findByKey("$KEY_PREFIX:*:$refreshToken")
   }
 
 
@@ -51,8 +52,7 @@ class TokenRepositoryRedis(
    * @return
    */
   fun findByRefreshTokenAndUserId(refreshToken: String, userId: String): String?{
-    val key = redisTemplate.keys("$KEY_PREFIX:$userId:$refreshToken").firstOrNull()
-    return key?.let{redisTemplate.opsForValue().get(it)}
+    return super.findByKey("$KEY_PREFIX:$userId:$refreshToken")
   }
 
   /**
@@ -61,13 +61,11 @@ class TokenRepositoryRedis(
    * @param refreshToken
    */
   fun deleteByRefreshToken(refreshToken: String){
-    val keys = redisTemplate.keys("$KEY_PREFIX:*:$refreshToken")
-    redisTemplate.delete(keys)
+    super.deleteByKey("$KEY_PREFIX:*:$refreshToken")
   }
 
   fun deleteByUserId(userId: String){
-    val keys = redisTemplate.keys("$KEY_PREFIX:$userId:*")
-    redisTemplate.delete(keys)
+    super.deleteByKey("$KEY_PREFIX:$userId:*")
   }
 
 }

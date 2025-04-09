@@ -10,5 +10,6 @@ data class UserDto(
   val ageRange: Int?,
   val gender: String? = "",
   val userRole: UserRole? = UserRole.USER,
-  val mobileNumber: String = ""
+  val mobileNumber: String? = "",
+  val verificationCode: String? = ""
 )
