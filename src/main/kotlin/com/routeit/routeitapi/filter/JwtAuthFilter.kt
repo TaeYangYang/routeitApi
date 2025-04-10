@@ -29,6 +29,7 @@ class JwtAuthFilter(
   val EXCLUDED_PATHS: Array<String> = arrayOf(
     "/swagger-ui/**", "/api-docs/**", // swagger
     "/api/test/**", // test
+    "/h2-console/**", //h2 db
     "/**/public/**" // 체크 안하는 경로
   )
 
@@ -45,7 +46,7 @@ class JwtAuthFilter(
    * @param filterChain
    */
   override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-    val accessToken: String = request.getHeader("Authrization")?.substring(7) ?: ""
+    val accessToken: String = request.getHeader("Authorization")?.substring(7) ?: ""
     val userId: String = jwtTokenProvider.getUserIdFromToken(accessToken) ?: ""
 
     try{

@@ -3,13 +3,13 @@ package com.routeit.routeitapi.application.user.dto
 import com.routeit.routeitapi.application.user.entity.UserRole
 
 data class UserDto(
-  val userId: String? = "",
-  val password: String? = "",
-  val name: String? = "",
-  val nickname: String? = "",
-  val ageRange: Int?,
-  val gender: String? = "",
-  val userRole: UserRole? = UserRole.USER,
-  val mobileNumber: String? = "",
-  val verificationCode: String? = ""
+  var userId: String? = "",
+  var password: String? = "",
+  var name: String? = "",
+  var nickname: String? = "",
+  var ageRange: Int? = null,
+  var gender: String? = "",
+  var userRole: UserRole? = UserRole.USER,
+  var mobileNumber: String? = "",
+  var verificationCode: String? = ""
 )

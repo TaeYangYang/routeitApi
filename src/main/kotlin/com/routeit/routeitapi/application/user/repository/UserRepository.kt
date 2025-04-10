@@ -13,4 +13,6 @@ interface UserRepository : JpaRepository<User, String>{
    * @return
    */
   fun findByUserId(userId: String): User?
+
+  fun findByNameAndMobileNumber(name: String, mobileNumber: String): User?
 }

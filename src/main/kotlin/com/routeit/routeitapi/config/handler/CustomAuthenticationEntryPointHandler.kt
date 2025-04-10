@@ -26,16 +26,16 @@ class CustomAuthenticationEntryPointHandler: AuthenticationEntryPoint {
       return
     }
 
-    val e = request?.getAttribute("exception") as InvalidTokenException
+    val e = request?.getAttribute("exception") as? InvalidTokenException
 
     response.characterEncoding = "UTF-8"
     response.contentType = MediaType.APPLICATION_JSON_VALUE
     response.status = HttpStatus.UNAUTHORIZED.value()
 
     val responseJson: JSONObject = JSONObject()
-    responseJson.put("code", e.code)
-    responseJson.put("status", e.status)
-    responseJson.put("message", e.message)
+    responseJson.put("code", e?.code ?: HttpStatus.UNAUTHORIZED.value())
+    responseJson.put("status", e?.status ?: HttpStatus.UNAUTHORIZED.name)
+    responseJson.put("message", e?.message ?: HttpStatus.UNAUTHORIZED.reasonPhrase)
 
     response.writer.print(responseJson)
   }

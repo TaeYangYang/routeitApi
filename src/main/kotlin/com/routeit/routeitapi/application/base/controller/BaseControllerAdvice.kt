@@ -40,7 +40,11 @@ class BaseControllerAdvice @Autowired constructor(
     }
 
     when (body) {
-      null -> return null
+      null -> {
+        return if(returnType.parameterType == String::class.java) {
+          objectMapper.writeValueAsString(ResponseDto(HttpStatus.OK.value(), "SUCCESS", HttpStatus.OK.reasonPhrase, null))
+        } else null
+      }
       is String -> {
         // String을 JSON 문자열로 변환 (StringHttpMessageConverter 우회)
         response.headers.contentType = MediaType.APPLICATION_JSON

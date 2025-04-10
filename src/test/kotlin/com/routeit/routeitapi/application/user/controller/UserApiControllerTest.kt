@@ -33,7 +33,7 @@ class UserApiControllerTest {
   fun test() {
     mockMvc.post("/api/user/signin") {
       contentType = org.springframework.http.MediaType.APPLICATION_JSON
-      content = """{"email":"user1@email.com", "password":"1234"}"""
+      content = """{"userId":"user1@email.com", "password":"1234"}"""
     }.andDo {
       print()
     }.andExpect {

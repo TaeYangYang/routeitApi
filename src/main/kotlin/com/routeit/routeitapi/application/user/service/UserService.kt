@@ -15,6 +15,7 @@ import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class UserService(
@@ -64,6 +65,7 @@ class UserService(
    */
   fun signUp(userDto: UserDto): String {
     val user: User = userMapper.toEntity(userDto)
+    user.updateUser(UserDto().apply { this.password = bCryptPasswordEncoder.encode(userDto.password) })
     userRepository.save(user)
     return "success"
   }
@@ -99,14 +101,55 @@ class UserService(
 
     if(activeProfile == "prod"){
       // 운영 환경에서는 난수 발송
-      verificationCode = (100000..999999).random().toString()
+      //verificationCode = (100000..999999).random().toString()
+      verificationCode = "000000" // 임시로 000000 셋팅
 
     } else{
       // 개발 환경에서는 000000
       verificationCode = "000000"
     }
+    userRepositoryRedis.save("$mobileNumber:verification", verificationCode, 3, TimeUnit.MINUTES) // 인증코드 유효시간 3분
+  }
 
-    userRepositoryRedis.save("$mobileNumber:verification", verificationCode)
+  /**
+   * 연락처 인증번호 일치여부
+   *
+   * @param userDto
+   * @return
+   */
+  fun checkVerificationCode(userDto: UserDto): Boolean{
+    val mobileNumber = userDto.mobileNumber
+    val userCode = userDto.verificationCode
+    val verificationCode = userRepositoryRedis.findByKey("$mobileNumber:verification")
+
+    return userCode == verificationCode
+  }
+
+  /**
+   * 아이디 찾기
+   *
+   * @param userDto
+   * @return
+   */
+  fun findUserId(userDto: UserDto): String?{
+    return if(userDto.name != null && userDto.mobileNumber != null){
+      userRepository.findByNameAndMobileNumber(userDto.name!!, userDto.mobileNumber!!)?.userId
+    } else{
+      null
+    }
+  }
+
+  /**
+   * 패스워드 변경
+   *
+   * @param userDto
+   * @return
+   */
+  fun updatePassword(userDto: UserDto): Boolean{
+    val user = userRepository.findByUserId(userDto.userId!!) ?: throw BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.error.notFound"))
+    user.updateUser(UserDto().apply { this.password = bCryptPasswordEncoder.encode(userDto.password) })
+    userRepository.save(user)
+    return true;
   }
 
 }

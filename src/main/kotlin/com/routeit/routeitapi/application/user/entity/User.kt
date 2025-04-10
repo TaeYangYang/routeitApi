@@ -2,6 +2,7 @@ package com.routeit.routeitapi.application.user.entity
 
 import com.fasterxml.jackson.databind.ser.Serializers.Base
 import com.routeit.routeitapi.application.base.entity.BaseEntity
+import com.routeit.routeitapi.application.user.dto.UserDto
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.hibernate.annotations.Comment
@@ -68,4 +69,10 @@ class User(
   @Comment("휴대전화")
   @Schema(description = "휴대전화", example = "010-1234-5678")
   var mobileNumber: String? = mobileNumber
+    protected set
+
+
+  fun updateUser(updateUser: UserDto){
+    updateUser.password?.let { this.password = it }
+  }
 }

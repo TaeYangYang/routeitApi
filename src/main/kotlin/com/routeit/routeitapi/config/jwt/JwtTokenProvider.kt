@@ -57,7 +57,7 @@ class JwtTokenProvider {
    */
   fun getAllClaimsFromToken(token: String): Claims{
     return Jwts.parser()
-      .decryptWith(key)
+      .verifyWith(key)
       .build()
       .parseSignedClaims(token)
       .payload

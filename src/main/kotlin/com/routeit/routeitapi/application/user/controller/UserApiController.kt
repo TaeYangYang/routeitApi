@@ -94,7 +94,7 @@ class UserApiController(
   @Operation(summary = "아이디 중복검사", description = "아이디 중복검사 API")
   @Parameters(
     value = [
-      Parameter(name = "userId", description = "사용자 아이디")]
+      Parameter(name = "userDto", description = "userId 포함된 값", example = "\"userId\": \"user1@example.com\"")]
   )
   @ApiResponses(
     value = [
@@ -114,7 +114,7 @@ class UserApiController(
   @Operation(summary = "연락처 인증번호 발송", description = "연락처 인증번호 발송 API, 개발환경은 \"000000\" ")
   @Parameters(
     value = [
-      Parameter(name = "mobileNumber", description = "연락처", example = "010-1234-5678")]
+      Parameter(name = "mobileNumber", description = "userDto", example = "{\"mobileNumber\": \"010-1234-5678\"")]
   )
   @PostMapping("/public/mobile-verification-code")
   fun mobileVerificationCode(@RequestBody userDto: UserDto): Unit{
@@ -122,15 +122,77 @@ class UserApiController(
     userService.validMobile(mobileNumber)
   }
 
+
   /**
    * 연락처 인증번호 일치여부
    *
-   * @param body
+   * @param userDto
+   * @return Boolean
+   */
+  @Operation(summary = "연락처 인증번호 일치여부", description = "연락처 인증번호 일치여부 검증 API")
+  @Parameters(
+    value = [
+      Parameter(name = "userDto", description = "연락처, 인증번호 포함된 값", example = """
+        {
+          "mobleNumber":"010-1234-5678",
+           "verificationCode":"123456" 
+        }
+      """)
+    ]
+  )
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "true : 일치, false : 불일치")
+    ]
+  )
+  @PostMapping("/public/check-verification-code")
+  fun checkVerificationCode(@RequestBody userDto: UserDto): Boolean {
+    return userService.checkVerificationCode(userDto)
+  }
+
+  /**
+   * 아이디 찾기
+   *
+   * @param userDto
    * @return
    */
-  fun checkVerificationCode(@RequestBody body: Map<String, String>): Boolean {
-    //TODO 연락처 인증번호 일치여부 구현 필요
-    return true
+  @Operation(summary = "아이디 찾기", description = "아이디 찾기 API")
+  @Parameters(
+    value = [
+      Parameter(name = "userDto", description = "name, mobileNumber 포함된 json", example = """
+        {
+          "name": "홍길동",
+          "mobileNumber":"010-1234-5678"
+        }
+      """)
+    ]
+  )
+  @PostMapping("/public/findUserId")
+  fun findUserId(@RequestBody userDto: UserDto): String?{
+    return userService.findUserId(userDto)
+  }
+
+  /**
+   * 패스워드 변경
+   *
+   * @param userDto
+   * @return
+   */
+  @Operation(summary = "패스워드 변경", description = "패스워드 변경 API")
+  @Parameters(
+    value = [
+      Parameter(name = "userDto", description = "userId, password", example = """
+        {
+          "userId": "user1@example.com",
+          "password":"user1!"
+        }
+      """)
+    ]
+  )
+  @ApiResponse(responseCode = "200", description = "true")
+  @PatchMapping("/password")
+  fun updatePassword(@RequestBody userDto: UserDto): Boolean {
+    return userService.updatePassword(userDto)
   }
 
 }
