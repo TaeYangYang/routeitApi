@@ -1,11 +1,9 @@
 package com.routeit.routeitapi.application.token.service
 
 import com.routeit.routeitapi.application.token.dto.TokenDto
-import com.routeit.routeitapi.application.token.repository.TokenRepositoryRedis
-import com.routeit.routeitapi.application.user.dto.UserDto
+import com.routeit.routeitapi.application.token.repository.TokenCacheRepository
 import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.config.jwt.JwtTokenProvider
-import com.routeit.routeitapi.config.jwt.REFRESH_TOKEN_EXP_TIME
 import com.routeit.routeitapi.config.jwt.TOKEN_PREFIX
 import com.routeit.routeitapi.exception.BaseRuntimeException
 import com.routeit.routeitapi.exception.InvalidTokenException
@@ -18,7 +16,7 @@ import java.util.*
 @Service
 class TokenService(
   private val messageSourceAccessor: MessageSourceAccessor,
-  private val tokenRepositoryRedis: TokenRepositoryRedis,
+  private val tokenCacheRepository: TokenCacheRepository,
   private val jwtTokenProvider: JwtTokenProvider
 ) {
 
@@ -29,7 +27,7 @@ class TokenService(
    * @return id
    */
   fun getRefreshToken(refreshToken: String): String{
-    return Optional.ofNullable(tokenRepositoryRedis.findByRefreshToken(refreshToken))
+    return Optional.ofNullable(tokenCacheRepository.findByRefreshToken(refreshToken))
       .orElseThrow{BaseRuntimeException(HttpStatus.UNAUTHORIZED, messageSourceAccessor.getMessage("token.null.fail"))}
   }
 
@@ -41,7 +39,7 @@ class TokenService(
    * @param userRole
    */
   fun putRefreshToken(refreshToken: String, userId: String, userRole: UserRole) {
-    tokenRepositoryRedis.save(refreshToken, userId, userRole)
+    tokenCacheRepository.save(refreshToken, userId, userRole)
   }
 
   /**
@@ -50,7 +48,7 @@ class TokenService(
    * @param refreshToken
    */
   private fun removeRefreshToken(refreshToken: String) {
-    tokenRepositoryRedis.deleteByRefreshToken(refreshToken)
+    tokenCacheRepository.deleteByRefreshToken(refreshToken)
   }
 
   /**
@@ -59,7 +57,7 @@ class TokenService(
    * @param id
    */
   fun removeUserRefreshToken(id: String) {
-    tokenRepositoryRedis.deleteByUserId(id)
+    tokenCacheRepository.deleteByUserId(id)
   }
 
   /**
@@ -93,7 +91,7 @@ class TokenService(
       throw InvalidTokenException(HttpStatus.UNAUTHORIZED, messageSourceAccessor.getMessage("token.invalid.fail"))
     }
 
-    val roleName = Optional.ofNullable(tokenRepositoryRedis.findByRefreshTokenAndUserId(refreshToken, userId))
+    val roleName = Optional.ofNullable(tokenCacheRepository.findByRefreshTokenAndUserId(refreshToken, userId))
       .orElseThrow{InvalidTokenException(HttpStatus.UNAUTHORIZED, messageSourceAccessor.getMessage("token.invalid.fail"))}
 
     val userRole = enumValueOf<UserRole>(roleName)

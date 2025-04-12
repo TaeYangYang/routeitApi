@@ -1,7 +1,6 @@
 package com.routeit.routeitapi.application.token.repository
 
-import com.routeit.routeitapi.application.base.repository.BaseRepositoryRedis
-import com.routeit.routeitapi.application.user.dto.UserDto
+import com.routeit.routeitapi.application.base.repository.BaseCacheRepository
 import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.config.jwt.REFRESH_TOKEN_EXP_TIME
 import org.springframework.data.redis.core.RedisTemplate
@@ -14,9 +13,9 @@ import java.util.concurrent.TimeUnit
  * @property redisTemplate
  */
 @Repository
-class TokenRepositoryRedis(
+class TokenCacheRepository(
   override val redisTemplate: RedisTemplate<String, String>
-): BaseRepositoryRedis(redisTemplate) {
+): BaseCacheRepository(redisTemplate) {
 
   companion object{
     private const val KEY_PREFIX = "refreshToken" // refreshToken:{userId}:{refreshToken}

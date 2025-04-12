@@ -1,12 +1,12 @@
 package com.routeit.routeitapi.application.user.repository
 
-import com.routeit.routeitapi.application.base.repository.BaseRepositoryRedis
+import com.routeit.routeitapi.application.base.repository.BaseCacheRepository
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
 
 @Repository
-class UserRepositoryRedis(
+class UserCacheRepository(
   override val redisTemplate: RedisTemplate<String, String>
-): BaseRepositoryRedis(redisTemplate) {
+): BaseCacheRepository(redisTemplate) {
 
 }

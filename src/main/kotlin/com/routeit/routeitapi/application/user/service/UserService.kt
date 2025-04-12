@@ -5,11 +5,9 @@ import com.routeit.routeitapi.application.token.service.TokenService
 import com.routeit.routeitapi.application.user.dto.UserDto
 import com.routeit.routeitapi.application.user.entity.User
 import com.routeit.routeitapi.application.user.repository.UserRepository
-import com.routeit.routeitapi.config.jwt.JwtTokenProvider
 import com.routeit.routeitapi.exception.BaseRuntimeException
-import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.application.user.mapper.UserMapper
-import com.routeit.routeitapi.application.user.repository.UserRepositoryRedis
+import com.routeit.routeitapi.application.user.repository.UserCacheRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.support.MessageSourceAccessor
 import org.springframework.http.HttpStatus
@@ -24,7 +22,7 @@ class UserService(
   private val userRepository: UserRepository,
   private val tokenService: TokenService,
   private val userMapper: UserMapper,
-  private val userRepositoryRedis: UserRepositoryRedis
+  private val userCacheRepository: UserCacheRepository
 ) {
 
   @Value("\${spring.profiles.active}")
@@ -108,7 +106,7 @@ class UserService(
       // 개발 환경에서는 000000
       verificationCode = "000000"
     }
-    userRepositoryRedis.save("$mobileNumber:verification", verificationCode, 3, TimeUnit.MINUTES) // 인증코드 유효시간 3분
+    userCacheRepository.save("$mobileNumber:verification", verificationCode, 3, TimeUnit.MINUTES) // 인증코드 유효시간 3분
   }
 
   /**
@@ -120,7 +118,7 @@ class UserService(
   fun checkVerificationCode(userDto: UserDto): Boolean{
     val mobileNumber = userDto.mobileNumber
     val userCode = userDto.verificationCode
-    val verificationCode = userRepositoryRedis.findByKey("$mobileNumber:verification")
+    val verificationCode = userCacheRepository.findByKey("$mobileNumber:verification")
 
     return userCode == verificationCode
   }
