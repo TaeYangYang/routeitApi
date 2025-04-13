@@ -35,6 +35,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-redis:3.4.4")
   implementation("io.github.oshai:kotlin-logging:7.0.5")
   implementation("com.googlecode.json-simple:json-simple:1.1.1")
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb:3.4.4")
 
   // DTO, Entity Mapper
   implementation("org.mapstruct:mapstruct:1.6.3")

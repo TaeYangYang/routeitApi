@@ -41,6 +41,10 @@ spring:
     redis:
       host: localhost
       port: 6379
+    mongodb:
+      host: localhost
+      port: 27017
+      database: routeit
   devtools:
     restart:
       enabled: false
@@ -74,3 +78,6 @@ logging:
           jdbc:
             bind: TRACE
         SQL: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.springframework.data.mongodb.core.MongoOperations: DEBUG
+    org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory: DEBUG
