@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Spring Boot 설정
+  routeit-api:
+    build: . #현재 디렉토리 기준 Dockerfile
+    container_name: routeit-api
+    ports:
+      - "8081:8081" # 호스트:컨테이너 포트 매핑
+    environment:
+      SPRING_PROFILES_ACTIVE: prod # Spring Profile 설정
+    depends_on:
+      - mariadb # DB 먼저 실행되어야 스프링부트 앱 실행
+      - mongodb
+  # MariaDB 설정
+  mariadb:
+    image: mariadb:11.4
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root # root 비밀번호
+      MYSQL_DATABASE: routeit # 생성 db명
+      MYSQL_USER: routeit # 사용자 계정
+      MYSQL_PASSWORD: routeit1234 # 사용자 비밀번호
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mariadb/data:/var/lib/mysql
+
+  # MongoDB 설정
+  mongodb:
+    image: mongo:8
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root1234
+      MONGO_INITDB_DATABASE: routeit
+    volumes:
+      - ./docker/mongodb/data:/data/db
+volumes:
+  mariadb_data:
+  mongodb_data:
