@@ -23,4 +23,4 @@ COPY --from=builder /app/build/libs/routeitApi-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8081
 
 # 컨테이너가 생성, 시작될 때 실행되는 명령어.
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -15,8 +15,9 @@
 
 ### 개발 환경
 - DB
-    - H2(Local), MariaDB(Proc)
+    - MariaDB
     - Redis
+    - MongoDB
 - Server
     - Kotlin 1.9.25(JDK 17)
     - Spring Boot 3.4.4
@@ -25,8 +26,20 @@
     - JPA
     - JWT
     - JUnit
+- 인프라 및 배포
+    - AWS EC2, RDS
+    - Docker
 - 문서
     - Swagger
 ---
 
 port : 8081
+
+---
+
+### 실행방법
+### 로컬
+프로젝트 루트 경로에서 아래 명령어 실행
+> docker compose -f docker-compose.yml -f docker-compose-local.yml up --build -d
+
+

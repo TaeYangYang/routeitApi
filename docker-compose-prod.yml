@@ -1,0 +1,39 @@
+services:
+  routeit-api:
+    container_name: routeit-api
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    build: . #현재 디렉토리 기준 Dockerfile
+    ports:
+      - "8081:8081" # 호스트:컨테이너 포트 매핑
+    depends_on: # DB 먼저 실행되어야 스프링부트 앱 실행
+#      - mariadb
+      - mongodb
+      - redis
+
+  # MongoDB 설정
+  mongodb:
+    container_name: mongodb
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root1234
+      MONGO_INITDB_DATABASE: routeit
+    volumes:
+      - mongodb_data:/data/db
+
+  # redis 설정
+  redis:
+    container_name: redis
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+        
+# 데이터 저장 volume (운영 환경에서 MariaDB는 RDS에 띄움)
+volumes:
+  mongodb_data:
+  redis_data:

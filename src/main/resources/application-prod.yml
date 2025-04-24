@@ -1,0 +1,35 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://mariadb:3306/routeit
+    username: routeit
+    password: routeit1234
+
+  jpa:
+    show-sql: true
+    hibernate:
+      #ddl-auto: create # drop table if exists
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MariaDBDialect
+    properties:
+      hibernate.jdbc.batch_size: 50
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+    defer-datasource-initialization: true # script 파일이 hibernate 초기화 이후 동작
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+    mongodb:
+      host: mongodb # docker-compose의 서비스 이름
+      port: 27017
+      database: routeit
+      username: routeit
+      password: routeit1234
