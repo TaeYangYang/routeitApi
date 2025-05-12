@@ -1,5 +1,6 @@
 package com.routeit.routeitapi.config
 
+import com.routeit.routeitapi.application.user.entity.UserRole
 import com.routeit.routeitapi.config.handler.CustomAuthenticationEntryPointHandler
 import com.routeit.routeitapi.filter.JwtAuthFilter
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
@@ -34,6 +35,7 @@ class SecurityConfig(
       .authorizeHttpRequests {
         it.requestMatchers(*EXCLUDED_PATHS).permitAll() // 체크 제외
           .requestMatchers(PathRequest.toH2Console()).permitAll() // H2 콘솔 접근 허용
+          .requestMatchers("**/admin/**").hasAnyAuthority(UserRole.ADMIN.name) // 관리자 화면은 권한 제어
           .anyRequest().authenticated() // 이 외 모두 인증 필요
       }
 

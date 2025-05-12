@@ -5,7 +5,7 @@ spring:
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://mariadb:3306/routeit
+    url: jdbc:mariadb://localhost:3306/routeit
     username: routeit
     password: routeit1234
 
@@ -29,14 +29,15 @@ spring:
 
   data:
     redis:
-      host: redis
+      host: localhost
       port: 6379
     mongodb:
-      host: mongodb # docker-compose의 서비스 이름
+      host: localhost # docker-compose의 서비스 이름
       port: 27017
       database: routeit
-      username: routeit
-      password: routeit1234
+      username: root
+      password: root1234
+      authentication-database: admin
 
   devtools:
     restart:

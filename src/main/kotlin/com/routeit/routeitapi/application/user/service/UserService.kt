@@ -39,7 +39,7 @@ class UserService(
 
     // 패스워드 검증
     if(!bCryptPasswordEncoder.matches(userDto.password, user.password)){
-      throw BaseRuntimeException()
+      throw BaseRuntimeException(HttpStatus.BAD_REQUEST, messageSourceAccessor.getMessage("user.login.fail"))
     }
 
     return tokenService.generateAllToken(user.userId!!, user.userRole!!)
