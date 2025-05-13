@@ -1,4 +1,4 @@
-package com.routeit.routeitapi.application.token
+package com.routeit.routeitapi.application.token.controller
 
 import com.routeit.routeitapi.application.token.dto.TokenDto
 import com.routeit.routeitapi.application.token.service.TokenService

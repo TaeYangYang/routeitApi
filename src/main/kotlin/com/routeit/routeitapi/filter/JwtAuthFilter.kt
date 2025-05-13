@@ -62,6 +62,8 @@ class JwtAuthFilter(
       }
     } catch(e: InvalidTokenException){
       request.setAttribute("exception", e)
+      filterChain.doFilter(request, response)
+      return
     }
   }
 
