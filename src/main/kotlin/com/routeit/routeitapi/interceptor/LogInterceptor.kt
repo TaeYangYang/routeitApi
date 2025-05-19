@@ -73,7 +73,7 @@ class LogInterceptor(
     val log = logStorage.remove(logId) ?: return
 
     // ContentCachingResponseWrapper로 응답 본문 캐시
-    val wrappedResponse = ContentCachingResponseWrapper(response)
+    val wrappedResponse = response as ContentCachingResponseWrapper
     val responseBody = wrappedResponse.contentAsByteArray.toString(Charsets.UTF_8)
 
     // 응답 데이터를 추가하여 로그 생성

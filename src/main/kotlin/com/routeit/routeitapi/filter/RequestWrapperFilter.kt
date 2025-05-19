@@ -6,10 +6,12 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.stereotype.Component
 
 /**
  * 모든 요청을 CustomHttpRequestWrapper로 감싸주는 필터
  */
+@Component
 class RequestWrapperFilter: Filter {
 
   override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain?) {
